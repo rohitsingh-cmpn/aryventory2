@@ -1,5 +1,6 @@
 import { FilterIcon, GridIcon, ListIcon, SearchIcon, ArrowRightIcon, CheckIcon, ShareIcon, XIcon } from "lucide-react";
 import React, { useState, useMemo } from "react";
+import FilterDate from "./filterDate";
 
 
 const Card = ({ children, className = "" }) => (
@@ -29,7 +30,7 @@ const Button = ({ children, variant = 'default', size = 'default', className = "
   };
 
   return (
-    <button className={`${baseStyle} ${variants[variant]} ${sizes[size]} ${className}`} {...props}>
+    <button className={`${baseStyle} ${variants[variant]} ${sizes[size]} ${className} cursor-pointer`} {...props}>
       {children}
     </button>
   );
@@ -136,11 +137,13 @@ const OrderCard = ({ order, viewMode = "grid" }) => {
 
 const FilterComponent = ({ initialFilters, onFilterChange, onReset, isMobile = false, onClose }) => {
   const [filters, setFilters] = useState(initialFilters);
+  
+  const [showDatePicker, setshowDatePicker] = useState(null);
 
-  const currentYear = new Date().getFullYear();
-  const dateOptions = [{ value: "", label: "Any Day" }, ...Array.from({ length: 31 }, (_, i) => ({ value: i + 1, label: `${i + 1}` }))];
-  const monthOptions = [{ value: "", label: "Any Month" }, { value: 1, label: "Jan" }, { value: 2, label: "Feb" }, { value: 3, label: "Mar" }, { value: 4, label: "Apr" }, { value: 5, label: "May" }, { value: 6, label: "Jun" }, { value: 7, label: "Jul" }, { value: 8, label: "Aug" }, { value: 9, label: "Sep" }, { value: 10, label: "Oct" }, { value: 11, label: "Nov" }, { value: 12, label: "Dec" }];
-  const yearOptions = [{ value: "", label: "Any Year" }, ...Array.from({ length: 11 }, (_, i) => ({ value: currentYear - 5 + i, label: `${currentYear - 5 + i}` }))];
+  // const currentYear = new Date().getFullYear();
+  // const dateOptions = [{ value: "", label: "Any Day" }, ...Array.from({ length: 31 }, (_, i) => ({ value: i + 1, label: `${i + 1}` }))];
+  // const monthOptions = [{ value: "", label: "Any Month" }, { value: 1, label: "Jan" }, { value: 2, label: "Feb" }, { value: 3, label: "Mar" }, { value: 4, label: "Apr" }, { value: 5, label: "May" }, { value: 6, label: "Jun" }, { value: 7, label: "Jul" }, { value: 8, label: "Aug" }, { value: 9, label: "Sep" }, { value: 10, label: "Oct" }, { value: 11, label: "Nov" }, { value: 12, label: "Dec" }];
+  // const yearOptions = [{ value: "", label: "Any Year" }, ...Array.from({ length: 11 }, (_, i) => ({ value: currentYear - 5 + i, label: `${currentYear - 5 + i}` }))];
   const statusOptions = ["Approved", "Rejected", "Expired"];
   
   const handleSelectChange = (type, value) => {
@@ -163,13 +166,14 @@ const FilterComponent = ({ initialFilters, onFilterChange, onReset, isMobile = f
      if(isMobile && onClose) onClose();
   };
 
-  const SelectGroup = ({ label, value, options, onChange }) => (
-    <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-500 mb-2">{label}</label>
-        <select value={value || ""} onChange={onChange} className="w-full p-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-[#f89320] focus:border-[#f89320]">
-            {options.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-        </select>
-    </div>
+  const SelectGroup = ({ label, value, options, cancel }) => (
+    // <div className="mb-4">
+    //     <label className="block text-sm font-medium text-gray-500 mb-2">{label}</label>
+    //     <select value={value || ""} onChange={onChange} className="w-full p-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-[#f89320] focus:border-[#f89320]">
+    //         {options.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+    //     </select>
+    // </div>
+    <FilterDate options={options} cancel={cancel}/>
   );
 
   return (
@@ -182,11 +186,31 @@ const FilterComponent = ({ initialFilters, onFilterChange, onReset, isMobile = f
 
           {/* Scrollable Filter Options */}
           <div className="flex-1 overflow-y-auto pr-2 -mr-2">
-            <div className="flex justify-between">
-               <SelectGroup label="Date" value={filters.date} options={dateOptions} onChange={(e) => handleSelectChange('date', e.target.value)} />
-            <SelectGroup label="Month" value={filters.month} options={monthOptions} onChange={(e) => handleSelectChange('month', e.target.value)} />
-            <SelectGroup label="Year" value={filters.year} options={yearOptions} onChange={(e) => handleSelectChange('year', e.target.value)} />
+            <div className="mb-4">
 
+              <label className="block text-sm font-medium text-gray-500 mb-4">Date</label>
+            <div className="flex flex-col  justify-center gap-2">
+              
+              {/* <SelectGroup label="" value={filters.date} options={3} onChange={(e) => handleSelectChange('date', e.target.value)} />
+              <SelectGroup label="" value={filters.month} options={2} onChange={(e) => handleSelectChange('month', e.target.value)} />
+              <SelectGroup label="" value={filters.year} options={1} onChange={(e) => handleSelectChange('year', e.target.value)} /> */}
+                
+                <div className="flex flex-wrap gap-2">
+
+                  <Button onClick={()=>setshowDatePicker(3)} children={'Date'} className="flex-1  text-center"></Button>
+                
+                  <Button onClick={()=>setshowDatePicker(2)} children={'Month'} className="flex-1 text-center" ></Button>
+                
+                 <Button onClick={()=>setshowDatePicker(1)} children={'Year'} className="flex-1 text-center"></Button>
+                </div>
+                
+                {/* {  && 
+                <div className=" fixed inset-0   flex items-center justify-center backdrop-blur-sm bg-white/30 bg-opacity-60 z-500 ">
+                  <SelectGroup options={showDatePicker} cancel={setshowDatePicker} />
+                </div>} */}
+                { showDatePicker>0 && <div className="px-2 pt-2"><SelectGroup options={showDatePicker} cancel={setshowDatePicker} /></div>}
+                
+            </div>
             </div>
            
             <div className="mb-4">
